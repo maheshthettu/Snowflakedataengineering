@@ -9,7 +9,7 @@ def email_exists(conn, email: str) -> bool:
     cur = conn.cursor()
     try:
         cur.execute(
-            "SELECT 1 FROM COLLEGE.BRANCH.USERS WHERE EMAIL = ?",
+            "SELECT 1 FROM COLLEGE.BRANCH.USERS WHERE EMAIL = %s",
             (email,)
         )
         return cur.fetchone() is not None

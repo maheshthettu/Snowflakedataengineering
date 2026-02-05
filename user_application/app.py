@@ -1,21 +1,19 @@
-import snowflake.connector
-snowflake.connector.paramstyle = "qmark"
-
 import sys
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT_DIR))
+sys.path.append(str(ROOT_DIR))
 
 import streamlit as st
-from snowflake_connection.snowflake_con import get_connection
-from snowflake_connection.validators import is_valid_email, email_exists
+from user_application.user_validators import is_valid_email, email_exists
+from db_ops import create_user
+from db_connection.db_connecter import get_connection
 
 st.title("📥 Load Data into Snowflake")
 
 name = st.text_input("Name")
 email = st.text_input("Email")
-age = st.number_input("Age", min_value=1, max_value=100, step=1)
+age = st.number_input("Age", min_value=1, max_value=100)
 
 if st.button("Load into Snowflake"):
 
@@ -32,22 +30,12 @@ if st.button("Load into Snowflake"):
             if email_exists(conn, email):
                 st.error("⚠️ Email already exists in database")
             else:
-                cur = conn.cursor()
-                cur.execute(
-                    """
-                    INSERT INTO COLLEGE.BRANCH.USERS (NAME, EMAIL, AGE)
-                    VALUES (?, ?, ?)
-                    """,
-                    (name, email, int(age))
-                )
-                conn.commit()
-                st.success("✅ Data loaded successfully into Snowflake")
+                create_user(name, email, int(age))
+                st.success("✅ Data loaded successfully")
 
         except Exception as e:
             st.error(f"❌ Error loading data: {e}")
 
         finally:
-            if 'cur' in locals():
-                cur.close()
             if 'conn' in locals():
                 conn.close()
