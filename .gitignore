@@ -1,0 +1,15 @@
+# ---- Environment variables ----
+.env
+
+# ---- Snowflake keys ----
+*.p8
+*.pub
+
+# ---- Python ----
+__pycache__/
+
+# ---- Virtual environment ----
+.env/
+
+# ---- OS / IDE ----
+.vscode/
